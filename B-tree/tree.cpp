@@ -102,3 +102,33 @@ void BTreeNode::splitChild(int i, BTreeNode *oldChild) {
     keys[i] = oldChild->keys[t - 1];
     keysNumber++;
 }
+
+void BTree::dump() {
+    FILE *file = fopen("dumpFile.gv", "w");
+    assert(file);
+
+    fprintf(file, "digraph g {\n");
+    fprintf(file, "node [shape = record,height=.1];\n");
+    root->nodeDump(file);
+    fprintf(file, "}");
+    fclose(file);
+
+    system("dot dumpFile.gv -Tpng -o dumpFile.png");
+    system("xdot dumpFile.gv");
+}
+
+void BTreeNode::nodeDump(FILE *file) {
+    fprintf(file, "node_%p[label = \"", this);
+
+    for (int i = 0; i < keysNumber; i++) {
+        fprintf(file, "<f_%p> |%d|", this, keys[i]);
+    }
+    fprintf(file, "\"];\n");
+
+    for (int i = 0; i < keysNumber + 1; i++) {
+        if (children[i] != nullptr) {
+            children[i]->nodeDump(file);
+            fprintf(file, "\"node_%p\":f_%p -> \"node_%p\"\n", this, children[i], children[i]);
+        }
+    }
+}

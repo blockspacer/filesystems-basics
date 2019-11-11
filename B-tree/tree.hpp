@@ -8,6 +8,8 @@ private:
 public:
     BTreeNode(int _t, bool _is_leaf);
 
+    void nodeDump(FILE *file);
+
     void insertNonFull(int k);
 
     void splitChild(int i, BTreeNode *y);
@@ -31,5 +33,7 @@ public:
     BTreeNode *search(int k);
 
     void insert(int k);
+
+    void dump();
 };
 

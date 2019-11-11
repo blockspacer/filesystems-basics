@@ -1,10 +1,23 @@
 #include <fstream>
 
+class Cell {
+private:
+    int key;
+    int value;
+    bool is_deleted;
+public:
+    Cell(int _key, int _value, bool _is_deleted) : key(_key), value(_value), is_deleted(_is_deleted) {}
+
+    friend class BTreeNode;
+
+    friend class BTree;
+};
+
 class BTreeNode {
 private:
-    int *keys;
-    int t;
+    Cell **cells;
     BTreeNode **children;
+    int t;
     int keysNumber;
     bool is_leaf;
 public:

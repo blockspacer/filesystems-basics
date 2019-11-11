@@ -20,18 +20,18 @@ void BTreeNode::traverse() {
         children[i]->traverse();
 }
 
-BTreeNode *BTreeNode::search(int k) {
+Cell *BTreeNode::search(int k) {
     int i = 0;
     while (i < keysNumber && k > cells[i]->key)
         i++;
 
     if (cells[i]->key == k)
-        return this;
+        return cells[i];
 
     return (is_leaf) ? nullptr : children[i]->search(k);
 }
 
-BTreeNode *BTree::search(int k) {
+Cell *BTree::search(int k) {
     return (root == nullptr) ? nullptr : root->search(k);
 }
 
@@ -109,8 +109,7 @@ void BTree::dump() {
     std::ofstream file;
     file.open("dumpFile.gv");
 
-    file << "digraph g {\n";
-    file << "node [shape = record,height=.1];\n";
+    file << "digraph g {\n" << "node [shape = record,height=.1];\n";
     root->nodeDump(file);
     file << "}";
     file.close();
@@ -124,8 +123,7 @@ void BTreeNode::nodeDump(std::ofstream &file) {
     int port = 0;
     file << "\t\t<tr>";
     for (port = 0; port < keysNumber; port++) {
-        bool deleted = false;
-        std::string color = (deleted) ? "0 0.3 0.9" : "white";
+        std::string color = (cells[port]->is_deleted) ? "0 0.3 0.9" : "white";
         file << "<td port=\"port_" << port << "\" border=\"1\" bgcolor=\"" << color << "\">" << cells[port]->key << ":"
              << cells[port]->value << "</td>\n\t\t";
     }
@@ -137,4 +135,10 @@ void BTreeNode::nodeDump(std::ofstream &file) {
             file << "node_" << this << ":port_" << port << " -> node_" << children[port] << "\n";
         }
     }
+}
+
+void BTree::remove(int k) {
+    auto cell = search(k);
+    if (cell != nullptr)
+        cell->is_deleted = true;
 }

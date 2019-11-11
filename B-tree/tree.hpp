@@ -31,7 +31,7 @@ public:
 
     void traverse();
 
-    BTreeNode *search(int k);
+    Cell *search(int k);
 
     friend class BTree;
 };
@@ -45,9 +45,11 @@ public:
 
     void traverse();
 
-    BTreeNode *search(int k);
+    Cell *search(int k);
 
     void insert(int k);
+
+    void remove(int k);
 
     void dump();
 };

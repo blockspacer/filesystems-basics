@@ -19,14 +19,10 @@ int main() {
     tree.insert(86);
     tree.insert(87);
 
-    std::cout << "Traversal of the constucted tree is:\n";
-    tree.traverse();
-    std::cout << std::endl;
+    tree.remove(60);
+    tree.remove(70);
+    tree.remove(80);
 
-    (tree.search(60) != nullptr) ? std::cout << "Found\n" : std::cout << "Not found\n";
-    (tree.search(15) != nullptr) ? std::cout << "Found\n" : std::cout << "Not found\n";
-
-    std::cout << "Dump:\n";
     tree.dump();
 
     return 0;

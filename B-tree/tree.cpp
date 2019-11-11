@@ -27,7 +27,6 @@ BTreeNode *BTreeNode::search(int k) {
         return this;
 
     return (is_leaf) ? nullptr : children[i]->search(k);
-
 }
 
 BTreeNode *BTree::search(int k) {
@@ -67,7 +66,8 @@ void BTreeNode::insertNonFull(int k) {
         keys[i + 1] = k;
         keysNumber++;
     } else {
-        while (i >= 0 && keys[i] > k) i--;
+        while (i >= 0 && keys[i] > k)
+            i--;
 
         if (children[i + 1]->keysNumber == 2 * t - 1) {
             splitChild(i + 1, children[i + 1]);

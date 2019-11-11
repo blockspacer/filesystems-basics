@@ -1,5 +1,6 @@
 #include <iostream>
 #include "tree.hpp"
+#include <fstream>
 
 BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_leaf) {
     keys = new int[2 * t - 1];
@@ -104,31 +105,31 @@ void BTreeNode::splitChild(int i, BTreeNode *oldChild) {
 }
 
 void BTree::dump() {
-    FILE *file = fopen("dumpFile.gv", "w");
-    assert(file);
+    std::ofstream file;
+    file.open("dumpFile.gv");
 
-    fprintf(file, "digraph g {\n");
-    fprintf(file, "node [shape = record,height=.1];\n");
+    file << "digraph g {\n";
+    file << "node [shape = record,height=.1];\n";
     root->nodeDump(file);
-    fprintf(file, "}");
-    fclose(file);
+    file << "}";
+    file.close();
 
     system("dot dumpFile.gv -Tpng -o dumpFile.png");
     system("xdot dumpFile.gv");
 }
 
-void BTreeNode::nodeDump(FILE *file) {
-    fprintf(file, "node_%p[label = \"", this);
+void BTreeNode::nodeDump(std::ofstream &file) {
+    file << "node_" << this << "[label = \"";
 
     for (int i = 0; i < keysNumber; i++) {
-        fprintf(file, "<f_%p> |%d|", this, keys[i]);
+        file << "<f_" << this << "> |" << keys[i] << "|";
     }
-    fprintf(file, "\"];\n");
+    file << "\"];\n";
 
     for (int i = 0; i < keysNumber + 1; i++) {
         if (children[i] != nullptr) {
             children[i]->nodeDump(file);
-            fprintf(file, "\"node_%p\":f_%p -> \"node_%p\"\n", this, children[i], children[i]);
+            file << "\"node_" << this << "\":f_" << children[i] << " -> \"node_" << children[i] << "\"\n";
         }
     }
 }

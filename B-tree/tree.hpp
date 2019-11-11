@@ -1,3 +1,5 @@
+#include <fstream>
+
 class BTreeNode {
 private:
     int *keys;
@@ -8,7 +10,7 @@ private:
 public:
     BTreeNode(int _t, bool _is_leaf);
 
-    void nodeDump(FILE *file);
+    void nodeDump(std::ofstream &file);
 
     void insertNonFull(int k);
 

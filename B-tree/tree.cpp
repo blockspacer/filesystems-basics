@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include "tree.hpp"
+#include <unordered_map>
 
 
 BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_leaf) {
@@ -148,3 +149,9 @@ void BTree::remove(int64_t k) {
 }
 
 Cell::Cell(int64_t _key, int64_t _value) : key(_key), value(_value), is_deleted(false) {}
+
+BTree *BTree::merge(BTree *tree) {
+    tree->traverse();
+    return tree;
+}
+

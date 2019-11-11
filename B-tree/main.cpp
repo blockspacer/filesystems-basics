@@ -1,19 +1,17 @@
 #include <iostream>
-#include <vector>
 #include "tree.hpp"
-#include <numeric>
 
 int main() {
-    BTree tree(2);
+    BTree oddTree(2);
+    for (auto key: {1, 3, 5, 7, 9, 11})
+        oddTree.insert(key, 1);
+    oddTree.dump();
 
-    std::vector<int> v(20);
-    std::iota(v.begin(), v.end(), 1);
-    for (auto key: v)
-        tree.insert(key, 1);
+    BTree evenTree(2);
+    for (auto key: {2, 4, 6, 8, 10, 12})
+        evenTree.insert(key, 1);
+    evenTree.dump();
 
-    for (auto key: {4, 7, 14, 17})
-        tree.remove(key);
-
-    tree.dump();
-
+    auto newTree = oddTree.merge(&evenTree);
+    newTree->dump();
 }

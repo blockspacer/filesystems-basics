@@ -8,4 +8,4 @@ $(TARGET): main.cpp tree.cpp
 	$(CXX) $(CXX_FLAGS) $^ -o $@
 
 clean:
-	rm $(TARGET)
+	rm $(TARGET) dumpFile.gv dumpFile.png

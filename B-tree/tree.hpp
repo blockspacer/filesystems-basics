@@ -52,5 +52,7 @@ public:
     void remove(int64_t k);
 
     void dump();
+
+    BTree *merge(BTree *tree);
 };
 

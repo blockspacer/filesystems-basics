@@ -9,7 +9,7 @@ BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_
 }
 
 void BTreeNode::traverse() {
-    int i = 0;
+    auto i = 0;
     for (i = 0; i < keysNumber; i++) {
         if (!is_leaf)
             children[i]->traverse();
@@ -20,18 +20,20 @@ void BTreeNode::traverse() {
         children[i]->traverse();
 }
 
-Cell *BTreeNode::search(int k) {
-    int i = 0;
+Cell *BTreeNode::search(int64_t k) {
+    auto i = 0;
     while (i < keysNumber && k > cells[i]->key)
         i++;
 
-    if (cells[i]->key == k)
-        return cells[i];
+    if (cells[i] != nullptr) {
+        if (cells[i]->key == k)
+            return cells[i];
+    }
 
     return (is_leaf) ? nullptr : children[i]->search(k);
 }
 
-Cell *BTree::search(int k) {
+Cell *BTree::search(int64_t k) {
     return (root == nullptr) ? nullptr : root->search(k);
 }
 
@@ -42,22 +44,22 @@ void BTree::traverse() {
 
 BTree::BTree(int _t) : root(nullptr), t(_t) {};
 
-void BTree::insert(int k) {
+void BTree::insert(int64_t k, int64_t v) {
     if (root == nullptr) {
         root = new BTreeNode(t, true);
-        root->cells[0] = new Cell(k, 100, false);
+        root->cells[0] = new Cell(k, v);
         root->keysNumber = 1;
     } else if (root->keysNumber == 2 * t - 1) {
         BTreeNode *newRoot = new BTreeNode(t, false);
         newRoot->children[0] = root;
         newRoot->splitChild(0, root);
-        newRoot->children[(newRoot->cells[0]->key < k)]->insertNonFull(k);
+        newRoot->children[(newRoot->cells[0]->key < k)]->insertNonFull(k, v);
         root = newRoot;
     } else
-        root->insertNonFull(k);
+        root->insertNonFull(k, v);
 }
 
-void BTreeNode::insertNonFull(int k) {
+void BTreeNode::insertNonFull(int64_t k, int64_t v) {
     int i = keysNumber - 1;
     if (is_leaf) {
         while (i >= 0 && cells[i]->key > k) {
@@ -65,7 +67,7 @@ void BTreeNode::insertNonFull(int k) {
             i--;
         }
 
-        cells[i + 1] = new Cell(k, 100, false);
+        cells[i + 1] = new Cell(k, v);
         keysNumber++;
     } else {
         while (i >= 0 && cells[i]->key > k)
@@ -75,7 +77,7 @@ void BTreeNode::insertNonFull(int k) {
             splitChild(i + 1, children[i + 1]);
             i += (cells[i + 1]->key < k);
         }
-        children[i + 1]->insertNonFull(k);
+        children[i + 1]->insertNonFull(k, v);
     }
 }
 
@@ -83,22 +85,22 @@ void BTreeNode::splitChild(int i, BTreeNode *oldChild) {
     BTreeNode *newChild = new BTreeNode(oldChild->t, oldChild->is_leaf);
     newChild->keysNumber = t - 1;
 
-    for (int j = 0; j < t - 1; j++)
+    for (auto j = 0; j < t - 1; j++)
         newChild->cells[j] = oldChild->cells[j + t];
 
     if (!oldChild->is_leaf) {
-        for (int j = 0; j < t; j++)
+        for (auto j = 0; j < t; j++)
             newChild->children[j] = oldChild->children[j + t];
     }
 
     oldChild->keysNumber = t - 1;
 
-    for (int j = keysNumber; j >= i + 1; j--)
+    for (auto j = keysNumber; j >= i + 1; j--)
         children[j + 1] = children[j];
 
     children[i + 1] = newChild;
 
-    for (int j = keysNumber - 1; j >= i; j--)
+    for (auto j = keysNumber - 1; j >= i; j--)
         cells[j + 1] = cells[j];
 
     cells[i] = oldChild->cells[t - 1];
@@ -120,25 +122,29 @@ void BTree::dump() {
 
 void BTreeNode::nodeDump(std::ofstream &file) {
     file << "node_" << this << "[label = \n\t<<table border=\"0\" cellborder=\"0\">\n";
-    int port = 0;
+    auto port = 0;
     file << "\t\t<tr>";
     for (port = 0; port < keysNumber; port++) {
         std::string color = (cells[port]->is_deleted) ? "0 0.3 0.9" : "white";
-        file << "<td port=\"port_" << port << "\" border=\"1\" bgcolor=\"" << color << "\">" << cells[port]->key << ":"
-             << cells[port]->value << "</td>\n\t\t";
+        file << "<td port=\"port_" << port << "\" border=\"1\" bgcolor=\"" <<
+             color << "\">" << cells[port]->key << ":" <<
+             cells[port]->value << "</td>\n\t\t";
     }
     file << "<td port=\"" << port << "\"></td></tr>\n\t</table>>];\n";
 
     for (port = 0; port < keysNumber + 1; port++) {
         if (children[port] != nullptr) {
             children[port]->nodeDump(file);
-            file << "node_" << this << ":port_" << port << " -> node_" << children[port] << "\n";
+            file << "node_" << this << ":port_" << port <<
+                 " -> node_" << children[port] << "\n";
         }
     }
 }
 
-void BTree::remove(int k) {
+void BTree::remove(int64_t k) {
     auto cell = search(k);
     if (cell != nullptr)
         cell->is_deleted = true;
 }
+
+Cell::Cell(int64_t _key, int64_t _value) : key(_key), value(_value), is_deleted(false) {}

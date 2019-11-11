@@ -2,11 +2,11 @@
 
 class Cell {
 private:
-    int key;
-    int value;
+    uint64_t key;
+    uint64_t value;
     bool is_deleted;
 public:
-    Cell(int _key, int _value, bool _is_deleted) : key(_key), value(_value), is_deleted(_is_deleted) {}
+    Cell(int64_t _key, int64_t _value);
 
     friend class BTreeNode;
 
@@ -25,13 +25,13 @@ public:
 
     void nodeDump(std::ofstream &file);
 
-    void insertNonFull(int k);
+    void insertNonFull(int64_t k, int64_t v);
 
     void splitChild(int i, BTreeNode *y);
 
     void traverse();
 
-    Cell *search(int k);
+    Cell *search(int64_t k);
 
     friend class BTree;
 };
@@ -45,11 +45,11 @@ public:
 
     void traverse();
 
-    Cell *search(int k);
+    Cell *search(int64_t k);
 
-    void insert(int k);
+    void insert(int64_t k, int64_t v);
 
-    void remove(int k);
+    void remove(int64_t k);
 
     void dump();
 };

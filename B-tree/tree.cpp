@@ -120,16 +120,16 @@ void BTree::dump() {
 
 void BTreeNode::nodeDump(std::ofstream &file) {
     file << "node_" << this << "[label = \"";
-
-    for (int i = 0; i < keysNumber; i++) {
-        file << "<f_" << this << "> |" << keys[i] << "|";
+    int port = 0;
+    for (port = 0; port < keysNumber; port++) {
+        file << "<f_" << port << "> |" << keys[port] << "|";
     }
-    file << "\"];\n";
+    file << "<f_" << port << ">\"];\n";
 
-    for (int i = 0; i < keysNumber + 1; i++) {
-        if (children[i] != nullptr) {
-            children[i]->nodeDump(file);
-            file << "\"node_" << this << "\":f_" << children[i] << " -> \"node_" << children[i] << "\"\n";
+    for (port = 0; port < keysNumber + 1; port++) {
+        if (children[port] != nullptr) {
+            children[port]->nodeDump(file);
+            file << "\"node_" << this << "\":f_" << port << " -> \"node_" << children[port] << "\"\n";
         }
     }
 }

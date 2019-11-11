@@ -58,7 +58,7 @@ BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_
     children = new BTreeNode *[2 * t];
 }
 
-void BTreeNode::traverse(std::unordered_map <uint64_t, uint64_t> &nodes) {
+void BTreeNode::traverse(std::unordered_map <int64_t, int64_t> &nodes) {
     auto i = 0;
     for (i = 0; i < keysNumber; i++) {
         if (!is_leaf)
@@ -108,7 +108,7 @@ Cell *BTree::search(int64_t k) {
     return (root == nullptr) ? nullptr : root->search(k);
 }
 
-void BTree::traverse(std::unordered_map <uint64_t, uint64_t> &nodes) {
+void BTree::traverse(std::unordered_map <int64_t, int64_t> &nodes) {
     if (root != nullptr)
         root->traverse(nodes);
 }
@@ -153,7 +153,7 @@ void BTree::remove(int64_t k) {
 
 
 void BTree::merge(BTree *tree) {
-    std::unordered_map <uint64_t, uint64_t> nodes;
+    std::unordered_map <int64_t, int64_t> nodes;
     tree->traverse(nodes);
     for (auto x: nodes)
         insert(x.first, x.second);

@@ -3,8 +3,8 @@
 
 class Cell {
 private:
-    uint64_t key;
-    uint64_t value;
+    int64_t key;
+    int64_t value;
     bool is_deleted;
 public:
     Cell(int64_t _key, int64_t _value);
@@ -30,7 +30,7 @@ public:
 
     void splitChild(int i, BTreeNode *y);
 
-    void traverse(std::unordered_map<uint64_t, uint64_t> &nodes);
+    void traverse(std::unordered_map<int64_t, int64_t> &nodes);
 
     Cell *search(int64_t k);
 
@@ -44,7 +44,7 @@ private:
 public:
     BTree(int _t);
 
-    void traverse(std::unordered_map<uint64_t, uint64_t> &nodes);
+    void traverse(std::unordered_map<int64_t, int64_t> &nodes);
 
     Cell *search(int64_t k);
 

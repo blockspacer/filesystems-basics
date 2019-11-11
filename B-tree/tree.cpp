@@ -1,6 +1,7 @@
 #include <iostream>
-#include "tree.hpp"
 #include <fstream>
+#include "tree.hpp"
+
 
 BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_leaf) {
     cells = new Cell *[2 * t - 1];
@@ -119,17 +120,21 @@ void BTree::dump() {
 }
 
 void BTreeNode::nodeDump(std::ofstream &file) {
-    file << "node_" << this << "[label = \"";
+    file << "node_" << this << "[label = \n\t<<table border=\"0\" cellborder=\"0\">\n";
     int port = 0;
+    file << "\t\t<tr>";
     for (port = 0; port < keysNumber; port++) {
-        file << "<f_" << port << "> |" << cells[port]->key << ":" << cells[port]->value << "|";
+        bool deleted = false;
+        std::string color = (deleted) ? "0 0.3 0.9" : "white";
+        file << "<td port=\"port_" << port << "\" border=\"1\" bgcolor=\"" << color << "\">" << cells[port]->key << ":"
+             << cells[port]->value << "</td>\n\t\t";
     }
-    file << "<f_" << port << ">\"];\n";
+    file << "<td port=\"" << port << "\"></td></tr>\n\t</table>>];\n";
 
     for (port = 0; port < keysNumber + 1; port++) {
         if (children[port] != nullptr) {
             children[port]->nodeDump(file);
-            file << "\"node_" << this << "\":f_" << port << " -> \"node_" << children[port] << "\"\n";
+            file << "node_" << this << ":port_" << port << " -> node_" << children[port] << "\n";
         }
     }
 }

@@ -2,16 +2,18 @@
 #include "tree.hpp"
 
 int main() {
-    BTree oddTree(2);
-    for (auto key: {1, 3, 5, 7, 9, 11})
-        oddTree.insert(key, 1);
-    oddTree.dump();
+    BTree tree(2);
+    for (auto key: {1, 3, 5, 7, 9, 11, 13, 15, 17, 19})
+        tree.insert(key, 1);
 
-    BTree evenTree(2);
-    for (auto key: {2, 4, 6, 8, 10, 12})
-        evenTree.insert(key, 1);
-    evenTree.dump();
+    BTree newTree(2);
+    for (auto key: {2, 4, 6, 8, 10, 12, 14, 16, 18, 20})
+        newTree.insert(key, 1);
 
-    auto newTree = oddTree.merge(&evenTree);
-    newTree->dump();
+    tree.merge(&newTree);
+
+    for (auto key: {3, 5, 12, 17})
+        tree.remove(key);
+
+    tree.dump();
 }

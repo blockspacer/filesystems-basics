@@ -1,4 +1,5 @@
 #include <fstream>
+#include <unordered_map>
 
 class Cell {
 private:
@@ -29,7 +30,7 @@ public:
 
     void splitChild(int i, BTreeNode *y);
 
-    void traverse();
+    void traverse(std::unordered_map<uint64_t, uint64_t> &nodes);
 
     Cell *search(int64_t k);
 
@@ -43,7 +44,7 @@ private:
 public:
     BTree(int _t);
 
-    void traverse();
+    void traverse(std::unordered_map<uint64_t, uint64_t> &nodes);
 
     Cell *search(int64_t k);
 
@@ -53,6 +54,6 @@ public:
 
     void dump();
 
-    BTree *merge(BTree *tree);
+    void merge(BTree *tree);
 };
 

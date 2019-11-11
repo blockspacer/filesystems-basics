@@ -1,64 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include "tree.hpp"
 #include <unordered_map>
+#include "tree.hpp"
 
-
-BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_leaf) {
-    cells = new Cell *[2 * t - 1];
-    children = new BTreeNode *[2 * t];
-}
-
-void BTreeNode::traverse(std::unordered_map <uint64_t, uint64_t> &nodes) {
-    auto i = 0;
-    for (i = 0; i < keysNumber; i++) {
-        if (!is_leaf)
-            children[i]->traverse(nodes);
-        nodes[cells[i]->key] = cells[i]->value;
-    }
-
-    if (!is_leaf)
-        children[i]->traverse(nodes);
-}
-
-Cell *BTreeNode::search(int64_t k) {
-    auto i = 0;
-    while (i < keysNumber && k > cells[i]->key)
-        i++;
-
-    if (cells[i] != nullptr) {
-        if (cells[i]->key == k)
-            return cells[i];
-    }
-
-    return (is_leaf) ? nullptr : children[i]->search(k);
-}
-
-Cell *BTree::search(int64_t k) {
-    return (root == nullptr) ? nullptr : root->search(k);
-}
-
-void BTree::traverse(std::unordered_map <uint64_t, uint64_t> &nodes) {
-    if (root != nullptr)
-        root->traverse(nodes);
-}
-
-BTree::BTree(int _t) : root(nullptr), t(_t) {};
-
-void BTree::insert(int64_t k, int64_t v) {
-    if (root == nullptr) {
-        root = new BTreeNode(t, true);
-        root->cells[0] = new Cell(k, v);
-        root->keysNumber = 1;
-    } else if (root->keysNumber == 2 * t - 1) {
-        BTreeNode *newRoot = new BTreeNode(t, false);
-        newRoot->children[0] = root;
-        newRoot->splitChild(0, root);
-        newRoot->children[(newRoot->cells[0]->key < k)]->insertNonFull(k, v);
-        root = newRoot;
-    } else
-        root->insertNonFull(k, v);
-}
+Cell::Cell(int64_t _key, int64_t _value) : key(_key), value(_value), is_deleted(false) {}
 
 void BTreeNode::insertNonFull(int64_t k, int64_t v) {
     int i = keysNumber - 1;
@@ -108,17 +53,34 @@ void BTreeNode::splitChild(int i, BTreeNode *oldChild) {
     keysNumber++;
 }
 
-void BTree::dump() {
-    std::ofstream file;
-    file.open("dumpFile.gv");
+BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_leaf) {
+    cells = new Cell *[2 * t - 1];
+    children = new BTreeNode *[2 * t];
+}
 
-    file << "digraph g {\n" << "node [shape = record,height=.1];\n";
-    root->nodeDump(file);
-    file << "}";
-    file.close();
+void BTreeNode::traverse(std::unordered_map <uint64_t, uint64_t> &nodes) {
+    auto i = 0;
+    for (i = 0; i < keysNumber; i++) {
+        if (!is_leaf)
+            children[i]->traverse(nodes);
+        nodes[cells[i]->key] = cells[i]->value;
+    }
 
-    system("dot dumpFile.gv -Tpng -o dumpFile.png");
-    system("xdot dumpFile.gv");
+    if (!is_leaf)
+        children[i]->traverse(nodes);
+}
+
+Cell *BTreeNode::search(int64_t k) {
+    auto i = 0;
+    while (i < keysNumber && k > cells[i]->key)
+        i++;
+
+    if (cells[i] != nullptr) {
+        if (cells[i]->key == k)
+            return cells[i];
+    }
+
+    return (is_leaf) ? nullptr : children[i]->search(k);
 }
 
 void BTreeNode::nodeDump(std::ofstream &file) {
@@ -142,13 +104,53 @@ void BTreeNode::nodeDump(std::ofstream &file) {
     }
 }
 
+Cell *BTree::search(int64_t k) {
+    return (root == nullptr) ? nullptr : root->search(k);
+}
+
+void BTree::traverse(std::unordered_map <uint64_t, uint64_t> &nodes) {
+    if (root != nullptr)
+        root->traverse(nodes);
+}
+
+BTree::BTree(int _t) : root(nullptr), t(_t) {};
+
+void BTree::insert(int64_t k, int64_t v) {
+    if (root == nullptr) {
+        root = new BTreeNode(t, true);
+        root->cells[0] = new Cell(k, v);
+        root->keysNumber = 1;
+    } else if (root->keysNumber == 2 * t - 1) {
+        BTreeNode *newRoot = new BTreeNode(t, false);
+        newRoot->children[0] = root;
+        newRoot->splitChild(0, root);
+        newRoot->children[(newRoot->cells[0]->key < k)]->insertNonFull(k, v);
+        root = newRoot;
+    } else
+        root->insertNonFull(k, v);
+}
+
+
+void BTree::dump() {
+    std::ofstream file;
+    file.open("dumpFile.gv");
+
+    file << "digraph g {\n" << "node [shape = record,height=.1];\n";
+    root->nodeDump(file);
+    file << "}";
+    file.close();
+
+    system("dot dumpFile.gv -Tpng -o dumpFile.png");
+    system("xdot dumpFile.gv");
+}
+
+
 void BTree::remove(int64_t k) {
     auto cell = search(k);
     if (cell != nullptr)
         cell->is_deleted = true;
 }
 
-Cell::Cell(int64_t _key, int64_t _value) : key(_key), value(_value), is_deleted(false) {}
 
 void BTree::merge(BTree *tree) {
     std::unordered_map <uint64_t, uint64_t> nodes;

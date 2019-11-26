@@ -1,4 +1,6 @@
 import logging
+import random
+import time
 from concurrent import futures
 
 import grpc
@@ -7,8 +9,13 @@ import helloworld_pb2_grpc
 
 
 class Greeter(helloworld_pb2_grpc.GreeterServicer):
+    def __init__(self):
+        self.counter = random.randint(1, 100)
 
     def SayHello(self, request, context):
+        self.counter += 1
+        if self.counter % 100 == 0:
+            time.sleep(1)
         return helloworld_pb2.HelloReply(message='Hello, %s!' % request.name)
 
 

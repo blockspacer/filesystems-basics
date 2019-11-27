@@ -23,7 +23,7 @@ class Generator(generator_pb2_grpc.GeneratorServicer):
         self.counter += 1
         if self.counter % 100 == 0:
             time.sleep(1)
-        random_string = ''.join(random.choices(self.char_set, k=8))  # 128
+        random_string = ''.join(random.choices(self.char_set, k=128))
         return generator_pb2.GenReply(text=random_string)
 
 

@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package generator;
+
+service Generator {
+    rpc generate (GenRequest) returns (GenReply) {
+    }
+}
+
+message GenRequest {
+    string id = 1;
+}
+
+message GenReply {
+    string text = 1;
+}

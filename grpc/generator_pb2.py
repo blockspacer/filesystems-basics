@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='generator',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0fgenerator.proto\x12\tgenerator\"\x18\n\nGenRequest\x12\n\n\x02id\x18\x01 \x01(\t\"\x18\n\x08GenReply\x12\x0c\n\x04text\x18\x01 \x01(\t2E\n\tGenerator\x12\x38\n\x08generate\x12\x15.generator.GenRequest\x1a\x13.generator.GenReply\"\x00\x62\x06proto3')
+  serialized_pb=_b('\n\x0fgenerator.proto\x12\tgenerator\"\x18\n\nGenRequest\x12\n\n\x02id\x18\x01 \x01(\x03\"\x18\n\x08GenReply\x12\x0c\n\x04text\x18\x01 \x01(\t2E\n\tGenerator\x12\x38\n\x08generate\x12\x15.generator.GenRequest\x1a\x13.generator.GenReply\"\x00\x32\x41\n\x05Proxy\x12\x38\n\x08generate\x12\x15.generator.GenRequest\x1a\x13.generator.GenReply\"\x00\x62\x06proto3')
 )
 
 
@@ -35,8 +35,8 @@ _GENREQUEST = _descriptor.Descriptor(
   fields=[
     _descriptor.FieldDescriptor(
       name='id', full_name='generator.GenRequest.id', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      number=1, type=3, cpp_type=2, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -129,5 +129,29 @@ _GENERATOR = _descriptor.ServiceDescriptor(
 _sym_db.RegisterServiceDescriptor(_GENERATOR)
 
 DESCRIPTOR.services_by_name['Generator'] = _GENERATOR
+
+
+_PROXY = _descriptor.ServiceDescriptor(
+  name='Proxy',
+  full_name='generator.Proxy',
+  file=DESCRIPTOR,
+  index=1,
+  serialized_options=None,
+  serialized_start=153,
+  serialized_end=218,
+  methods=[
+  _descriptor.MethodDescriptor(
+    name='generate',
+    full_name='generator.Proxy.generate',
+    index=0,
+    containing_service=None,
+    input_type=_GENREQUEST,
+    output_type=_GENREPLY,
+    serialized_options=None,
+  ),
+])
+_sym_db.RegisterServiceDescriptor(_PROXY)
+
+DESCRIPTOR.services_by_name['Proxy'] = _PROXY
 
 # @@protoc_insertion_point(module_scope)

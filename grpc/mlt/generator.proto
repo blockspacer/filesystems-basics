@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package generator;
+
+service Generator {
+    rpc generate (GenRequest) returns (GenReply) {
+    }
+}
+
+service Proxy {
+    rpc generate (GenRequest) returns (GenReply) {
+    }
+}
+
+message GenRequest {
+    int64 id = 1;
+}
+
+message GenReply {
+    string text = 1;
+}

@@ -27,7 +27,7 @@ $: python server.py
 Now you have several options:
 
 
-Option 1: use multiprocessing version of client:
+Option 1: use multiprocessing version of client.
 It instantiates 16 servers balancing requests between the 
 servers using the 
 [`SO_REUSEPORT`](https://lwn.net/Articles/542629/) socket option.
@@ -47,7 +47,7 @@ $: python proxy.py # if you want to use proxy
 $: python dummy_client.py
 ```
 
-Note: obviously, all programmes should be run 
+Note: obviously, all programs should be run 
 in different terminal windows.
 
 Based on provided code [example](https://github.com/grpc/grpc/tree/master/examples/python/multiprocessing) by gRPC authors.

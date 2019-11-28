@@ -40,7 +40,8 @@ def write_config(key: str, value: str):
 def read_config(key: str) -> str:
     config = ConfigParser()
     config.read('config.ini')
-    return config['ADDRESSES'][key]
+    section = config['ADDRESSES']
+    return section.getboolean(key) if key == 'use_proxy' else section[key]
 
 
 def green_print(string):

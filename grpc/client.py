@@ -1,4 +1,3 @@
-import argparse
 import atexit
 import logging
 import multiprocessing
@@ -7,8 +6,9 @@ import grpc
 
 import generator_pb2
 import generator_pb2_grpc
+from utils import read_config, compress_string
 
-PROCESS_NUMBER = 4  # 16
+PROCESS_NUMBER = 16
 
 _worker_channel_singleton = None
 _worker_stub_singleton = None
@@ -34,7 +34,7 @@ def _run_worker_query(_):
     return _worker_stub_singleton.generate(generator_pb2.GenRequest())
 
 
-def generate_string(server_address: str, process_number: int):
+def generate_string(server_address: str, process_number: int) -> str:
     worker_pool = multiprocessing.Pool(
         processes=process_number,
         initializer=_initialize_worker,
@@ -45,15 +45,9 @@ def generate_string(server_address: str, process_number: int):
 
 
 def main():
-    logging.basicConfig(
-        format='%(asctime)s.%(msecs)03d %(message)s',
-        datefmt='%H:%M:%S',
-        level=logging.INFO,
-    )
-    parser = argparse.ArgumentParser()
-    parser.add_argument('server_address')
-    args = parser.parse_args()
-    print(generate_string(args.server_address, PROCESS_NUMBER))
+    server_address = read_config('server_address')
+    string = generate_string(server_address, PROCESS_NUMBER)
+    print(compress_string(string))
 
 
 if __name__ == '__main__':

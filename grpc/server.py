@@ -22,7 +22,7 @@ class Generator(generator_pb2_grpc.GeneratorServicer):
         self.counter += 1
         if self.counter % 100 == 0:
             time.sleep(1)
-        random_string = ''.join(random.choices(self.char_set, k=8))  # 128
+        random_string = ''.join(random.choices(self.char_set, k=128))
         return generator_pb2.GenReply(text=random_string)
 
 
@@ -49,15 +49,15 @@ def main():
         write_config('server_address', server_address)
         sys.stdout.flush()
 
-        _run_server(server_address)
-        # workers = []
-        # for _ in range(multiprocessing.cpu_count()):
-        #     worker = multiprocessing.Process(
-        #         target=_run_server, args=(server_address,)
-        #     )
-        #     worker.start()
-        #     workers.append(worker)
-        # map(lambda w: w.join(), workers)
+        # _run_server(server_address) # single processed execution
+        workers = []
+        for _ in range(multiprocessing.cpu_count()):
+            worker = multiprocessing.Process(
+                target=_run_server, args=(server_address,)
+            )
+            worker.start()
+            workers.append(worker)
+        map(lambda w: w.join(), workers)
 
 
 if __name__ == '__main__':

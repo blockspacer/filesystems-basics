@@ -1,6 +1,15 @@
 import contextlib
+import logging
 import socket
 from configparser import ConfigParser
+
+from termcolor import colored
+
+logging.basicConfig(
+    format='%(asctime)s.%(msecs)03d: %(message)s',
+    datefmt='%H:%M:%S',
+    level=logging.INFO,
+)
 
 
 def compress_string(string: str, limit: int = 20) -> str:
@@ -32,3 +41,7 @@ def read_config(key: str) -> str:
     config = ConfigParser()
     config.read('config.ini')
     return config['ADDRESSES'][key]
+
+
+def green_print(string):
+    print(colored(string, 'green'))

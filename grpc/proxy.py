@@ -8,11 +8,6 @@ import generator_pb2
 import generator_pb2_grpc
 from utils import _reserve_port, read_config, write_config
 
-PROCESS_NUMBER = 4  # 16
-
-_worker_channel_singleton = None
-_worker_stub_singleton = None
-
 
 class Proxy(generator_pb2_grpc.ProxyServicer):
     def __init__(self, server_address):
@@ -21,8 +16,7 @@ class Proxy(generator_pb2_grpc.ProxyServicer):
     def generate(self, request, context):
         with grpc.insecure_channel(self.server_address) as channel:
             stub = generator_pb2_grpc.GeneratorStub(channel)
-            response = stub.generate(generator_pb2.GenRequest())
-            return response
+            return stub.generate(generator_pb2.GenRequest())
 
 
 def _run_proxy(server_address, bind_address):
@@ -37,11 +31,6 @@ def _run_proxy(server_address, bind_address):
 
 
 def main():
-    logging.basicConfig(
-        format='%(asctime)s.%(msecs)03d %(message)s',
-        datefmt='%H:%M:%S',
-        level=logging.INFO,
-    )
     with _reserve_port() as port:
         server_address = read_config('server_address')
         proxy_address = f'localhost:{port}'

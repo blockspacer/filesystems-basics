@@ -2,6 +2,7 @@ import contextlib
 import logging
 import socket
 from configparser import ConfigParser
+from typing import Union
 
 from termcolor import colored
 
@@ -37,7 +38,7 @@ def write_config(key: str, value: str):
         config.write(configfile)
 
 
-def read_config(key: str) -> str:
+def read_config(key: str) -> Union[str, bool]:
     config = ConfigParser()
     config.read('config.ini')
     section = config['ADDRESSES']

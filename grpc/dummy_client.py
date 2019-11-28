@@ -8,11 +8,11 @@ import generator_pb2_grpc
 from utils import compress_string, read_config
 
 
-def run(server_address: str, request_number: int) -> str:
+def run(server_address: str, request_number: int, use_proxy: bool) -> str:
     result = ''
     with grpc.insecure_channel(server_address) as channel:
-        # stub = generator_pb2_grpc.GeneratorStub(channel)
-        stub = generator_pb2_grpc.ProxyStub(channel)
+        stub = generator_pb2_grpc.ProxyStub(channel) if use_proxy \
+            else generator_pb2_grpc.GeneratorStub(channel)
         for i in range(request_number):
             start = datetime.now()
             response = stub.generate(generator_pb2.GenRequest())
@@ -25,8 +25,9 @@ def run(server_address: str, request_number: int) -> str:
 
 
 def main():
-    proxy_address = read_config('proxy_address')
-    generated_string = run(proxy_address, 100)
+    use_proxy = read_config('use_proxy')
+    server_address = read_config('proxy_address') if use_proxy else read_config('server_address')
+    generated_string = run(server_address, 100, read_config('use_proxy'))
     print(f'Length: {len(generated_string)}')
     print(compress_string(generated_string))
 

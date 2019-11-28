@@ -1,4 +1,3 @@
-import argparse
 import logging
 import multiprocessing
 from concurrent import futures
@@ -7,7 +6,7 @@ import grpc
 
 import generator_pb2
 import generator_pb2_grpc
-from utils import _reserve_port
+from utils import _reserve_port, read_config, write_config
 
 PROCESS_NUMBER = 4  # 16
 
@@ -43,11 +42,11 @@ def main():
         datefmt='%H:%M:%S',
         level=logging.INFO,
     )
-    parser = argparse.ArgumentParser()
-    parser.add_argument('server_address')
-    args = parser.parse_args()
     with _reserve_port() as port:
-        _run_proxy(args.server_address, bind_address=f'localhost:{port}')
+        server_address = read_config('server_address')
+        proxy_address = f'localhost:{port}'
+        write_config('proxy_address', proxy_address)
+        _run_proxy(server_address, proxy_address)
 
 
 if __name__ == '__main__':

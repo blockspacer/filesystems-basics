@@ -10,7 +10,7 @@ import grpc
 
 import generator_pb2
 import generator_pb2_grpc
-from utils import _reserve_port
+from utils import _reserve_port, write_config
 
 
 class Generator(generator_pb2_grpc.GeneratorServicer):
@@ -22,7 +22,7 @@ class Generator(generator_pb2_grpc.GeneratorServicer):
         self.counter += 1
         if self.counter % 100 == 0:
             time.sleep(1)
-        random_string = ''.join(random.choices(self.char_set, k=128))
+        random_string = ''.join(random.choices(self.char_set, k=8))  # 128
         return generator_pb2.GenReply(text=random_string)
 
 
@@ -39,15 +39,21 @@ def _run_server(bind_address):
 
 
 def main():
+    logging.basicConfig(
+        format='%(asctime)s.%(msecs)03d %(message)s',
+        datefmt='%H:%M:%S',
+        level=logging.INFO,
+    )
     with _reserve_port() as port:
-        logging.info(f'Binding to localhost:{port}')
+        server_address = f'localhost:{port}'
+        write_config('server_address', server_address)
         sys.stdout.flush()
 
-        _run_server(f'localhost:{port}')
+        _run_server(server_address)
         # workers = []
         # for _ in range(multiprocessing.cpu_count()):
         #     worker = multiprocessing.Process(
-        #         target=_run_server, args=(f'localhost:{port}',)
+        #         target=_run_server, args=(server_address,)
         #     )
         #     worker.start()
         #     workers.append(worker)
@@ -55,9 +61,4 @@ def main():
 
 
 if __name__ == '__main__':
-    logging.basicConfig(
-        format='%(asctime)s.%(msecs)03d %(message)s',
-        datefmt='%H:%M:%S',
-        level=logging.INFO,
-    )
     main()

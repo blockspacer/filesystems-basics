@@ -1,4 +1,3 @@
-import argparse
 from datetime import datetime
 
 import grpc
@@ -6,7 +5,7 @@ from termcolor import colored
 
 import generator_pb2
 import generator_pb2_grpc
-from utils import compress_string
+from utils import compress_string, read_config
 
 
 def run(server_address: str, request_number: int) -> str:
@@ -26,10 +25,8 @@ def run(server_address: str, request_number: int) -> str:
 
 
 def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument('server_address')
-    args = parser.parse_args()
-    generated_string = run(args.server_address, 100)
+    proxy_address = read_config('proxy_address')
+    generated_string = run(proxy_address, 100)
     print(f'Length: {len(generated_string)}')
     print(compress_string(generated_string))
 

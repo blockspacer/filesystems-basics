@@ -1,5 +1,6 @@
 import contextlib
 import socket
+from configparser import ConfigParser
 
 
 def compress_string(string: str, limit: int = 20) -> str:
@@ -17,3 +18,17 @@ def _reserve_port():
         yield sock.getsockname()[1]
     finally:
         sock.close()
+
+
+def write_config(key: str, value: str):
+    config = ConfigParser()
+    config.read('config.ini')
+    config['ADDRESSES'][key] = value
+    with open('config.ini', 'w') as configfile:
+        config.write(configfile)
+
+
+def read_config(key: str) -> str:
+    config = ConfigParser()
+    config.read('config.ini')
+    return config['ADDRESSES'][key]

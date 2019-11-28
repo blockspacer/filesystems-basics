@@ -1,8 +1,6 @@
-import contextlib
 import logging
 import multiprocessing
 import random
-import socket
 import string
 import sys
 import time
@@ -12,6 +10,7 @@ import grpc
 
 import generator_pb2
 import generator_pb2_grpc
+from utils import _reserve_port
 
 
 class Generator(generator_pb2_grpc.GeneratorServicer):
@@ -28,7 +27,7 @@ class Generator(generator_pb2_grpc.GeneratorServicer):
 
 
 def _run_server(bind_address):
-    logging.info('Starting new server.')
+    logging.info(f'Starting new server on {bind_address}')
 
     server = grpc.server(
         futures.ThreadPoolExecutor(max_workers=multiprocessing.cpu_count()),
@@ -39,33 +38,20 @@ def _run_server(bind_address):
     server.wait_for_termination()
 
 
-@contextlib.contextmanager
-def _reserve_port():
-    """Find and reserve a port for all subprocesses to use."""
-    sock = socket.socket(socket.AF_INET6, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT, 1)
-    if sock.getsockopt(socket.SOL_SOCKET, socket.SO_REUSEPORT) == 0:
-        raise RuntimeError('Failed to set SO_REUSEPORT.')
-    sock.bind(('', 0))
-    try:
-        yield sock.getsockname()[1]
-    finally:
-        sock.close()
-
-
 def main():
     with _reserve_port() as port:
         logging.info(f'Binding to localhost:{port}')
         sys.stdout.flush()
 
-        workers = []
-        for _ in range(multiprocessing.cpu_count()):
-            worker = multiprocessing.Process(
-                target=_run_server, args=(f'localhost:{port}',)
-            )
-            worker.start()
-            workers.append(worker)
-        map(lambda w: w.join(), workers)
+        _run_server(f'localhost:{port}')
+        # workers = []
+        # for _ in range(multiprocessing.cpu_count()):
+        #     worker = multiprocessing.Process(
+        #         target=_run_server, args=(f'localhost:{port}',)
+        #     )
+        #     worker.start()
+        #     workers.append(worker)
+        # map(lambda w: w.join(), workers)
 
 
 if __name__ == '__main__':

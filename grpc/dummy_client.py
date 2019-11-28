@@ -12,7 +12,8 @@ from utils import compress_string
 def run(server_address: str, request_number: int) -> str:
     result = ''
     with grpc.insecure_channel(server_address) as channel:
-        stub = generator_pb2_grpc.GeneratorStub(channel)
+        # stub = generator_pb2_grpc.GeneratorStub(channel)
+        stub = generator_pb2_grpc.ProxyStub(channel)
         for i in range(request_number):
             start = datetime.now()
             response = stub.generate(generator_pb2.GenRequest())

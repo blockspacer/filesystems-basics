@@ -3,9 +3,9 @@
 
 
 int main() {
-    std::cout << "CMD" << "\t" << "PID" << std::endl;
-    for (auto pid : getPids())
-        std::cout << getCmd(pid) << "\t" << pid << "\n";
+    std::cout << "CMD" << "\t" << "PID" << "\t" << "USER" << std::endl;
+    for (auto pid : get_pids())
+        std::cout << get_cmd(pid) << "\t" << pid << "\t" << get_user(pid) << "\n";
 
     return 0;
 }

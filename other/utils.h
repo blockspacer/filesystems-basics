@@ -3,8 +3,12 @@
 #include <string>
 #include <vector>
 
-bool isNumber(const std::string &str);
+bool is_number(const std::string &str);
 
-std::string getCmd(const int pid);
+std::string get_cmd(const int pid);
 
-std::vector<int> getPids();
+std::vector<int> get_pids();
+
+int get_uid(const int pid);
+
+std::string get_user(const int pid);

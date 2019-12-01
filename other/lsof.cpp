@@ -1,5 +1,5 @@
 #include <iostream>
-#include "./utils.h"
+#include "./utils.hpp"
 
 int main() {
     std::cout << "CMD" << "\t" << "PID" << "\t" << "USER" << std::endl;

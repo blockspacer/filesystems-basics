@@ -5,8 +5,6 @@
 #include <algorithm>
 #include <experimental/filesystem>
 #include <pwd.h>
-#include "./utils.h"
-
 
 namespace fs = std::experimental::filesystem;
 

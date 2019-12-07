@@ -16,4 +16,13 @@ int main() {
         tree.remove(key);
 
     tree.dump();
+
+    for (auto i = 0; i < 10; i++) {
+        tree.insert(3, i);
+        tree.remove(3);
+    }
+
+    tree.insert(3, 10);
+
+    tree.dump();
 }

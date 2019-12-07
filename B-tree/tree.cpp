@@ -3,11 +3,14 @@
 #include <unordered_map>
 #include "tree.hpp"
 
-Cell::Cell(int64_t _key, int64_t _value) : key(_key), value(_value), is_deleted(false) {}
+Cell::Cell(int64_t key, int64_t value) :
+        key(key),
+        value(value),
+        is_deleted(false) {}
 
 void BTreeNode::insertNonFull(int64_t k, int64_t v) {
     int i = keysNumber - 1;
-    if (is_leaf) {
+    if (isLeaf) {
         while (i >= 0 && cells[i]->key > k) {
             cells[i + 1] = cells[i];
             i--;
@@ -28,13 +31,13 @@ void BTreeNode::insertNonFull(int64_t k, int64_t v) {
 }
 
 void BTreeNode::splitChild(int i, BTreeNode *oldChild) {
-    BTreeNode *newChild = new BTreeNode(oldChild->t, oldChild->is_leaf);
+    BTreeNode *newChild = new BTreeNode(oldChild->t, oldChild->isLeaf);
     newChild->keysNumber = t - 1;
 
     for (auto j = 0; j < t - 1; j++)
         newChild->cells[j] = oldChild->cells[j + t];
 
-    if (!oldChild->is_leaf) {
+    if (!oldChild->isLeaf) {
         for (auto j = 0; j < t; j++)
             newChild->children[j] = oldChild->children[j + t];
     }
@@ -53,25 +56,27 @@ void BTreeNode::splitChild(int i, BTreeNode *oldChild) {
     keysNumber++;
 }
 
-BTreeNode::BTreeNode(int _t, bool _is_leaf) : t(_t), keysNumber(0), is_leaf(_is_leaf) {
-    cells = new Cell *[2 * t - 1];
-    children = new BTreeNode *[2 * t];
-}
+BTreeNode::BTreeNode(int t, bool isLeaf) :
+        t(t),
+        keysNumber(0),
+        isLeaf(isLeaf),
+        cells(new Cell *[2 * t - 1]),
+        children(new BTreeNode *[2 * t]) {}
 
 void BTreeNode::traverse(std::unordered_map <int64_t, int64_t> &nodes) {
-    auto i = 0;
+    int i = 0;
     for (i = 0; i < keysNumber; i++) {
-        if (!is_leaf)
+        if (!isLeaf)
             children[i]->traverse(nodes);
         nodes[cells[i]->key] = cells[i]->value;
     }
 
-    if (!is_leaf)
+    if (!isLeaf)
         children[i]->traverse(nodes);
 }
 
 Cell *BTreeNode::search(int64_t k) {
-    auto i = 0;
+    int i = 0;
     while (i < keysNumber && k > cells[i]->key)
         i++;
 
@@ -80,12 +85,12 @@ Cell *BTreeNode::search(int64_t k) {
             return cells[i];
     }
 
-    return (is_leaf) ? nullptr : children[i]->search(k);
+    return (isLeaf) ? nullptr : children[i]->search(k);
 }
 
 void BTreeNode::nodeDump(std::ofstream &file) {
     file << "node_" << this << "[label = \n\t<<table border=\"0\" cellborder=\"0\">\n";
-    auto port = 0;
+    int port = 0;
     file << "\t\t<tr>";
     for (port = 0; port < keysNumber; port++) {
         std::string color = (cells[port]->is_deleted) ? "0 0.3 0.9" : "white";
@@ -113,9 +118,18 @@ void BTree::traverse(std::unordered_map <int64_t, int64_t> &nodes) {
         root->traverse(nodes);
 }
 
-BTree::BTree(int _t) : root(nullptr), t(_t) {};
+BTree::BTree(int t) :
+        root(nullptr),
+        t(t) {};
 
 void BTree::insert(int64_t k, int64_t v) {
+    auto cell = search(k);
+    if (cell != nullptr) {
+        cell->value = v;
+        cell->is_deleted = false;
+        return;
+    }
+
     if (root == nullptr) {
         root = new BTreeNode(t, true);
         root->cells[0] = new Cell(k, v);

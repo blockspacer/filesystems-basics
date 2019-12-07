@@ -7,7 +7,7 @@ private:
     int64_t value;
     bool is_deleted;
 public:
-    Cell(int64_t _key, int64_t _value);
+    Cell(int64_t key, int64_t value);
 
     friend class BTreeNode;
 
@@ -16,23 +16,24 @@ public:
 
 class BTreeNode {
 private:
-    Cell **cells;
-    BTreeNode **children;
     int t;
     int keysNumber;
-    bool is_leaf;
-public:
-    BTreeNode(int _t, bool _is_leaf);
+    bool isLeaf;
+    Cell **cells;
+    BTreeNode **children;
 
     void nodeDump(std::ofstream &file);
 
-    void insertNonFull(int64_t k, int64_t v);
-
     void splitChild(int i, BTreeNode *y);
 
-    void traverse(std::unordered_map<int64_t, int64_t> &nodes);
+    void insertNonFull(int64_t k, int64_t v);
+
+    void traverse(std::unordered_map <int64_t, int64_t> &nodes);
 
     Cell *search(int64_t k);
+
+public:
+    BTreeNode(int t, bool isLeaf);
 
     friend class BTree;
 };
@@ -41,19 +42,20 @@ class BTree {
 private:
     BTreeNode *root;
     int t;
-public:
-    BTree(int _t);
 
-    void traverse(std::unordered_map<int64_t, int64_t> &nodes);
+    void traverse(std::unordered_map <int64_t, int64_t> &nodes);
 
     Cell *search(int64_t k);
+
+public:
+    BTree(int t);
+
+    void merge(BTree *tree);
 
     void insert(int64_t k, int64_t v);
 
     void remove(int64_t k);
 
     void dump();
-
-    void merge(BTree *tree);
 };
 
